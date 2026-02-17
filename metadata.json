@@ -1,0 +1,5 @@
+{
+  "name": "MedLink",
+  "description": "A secure, privacy-first medical communication app for the Georgian market featuring role-based access, anamnesis management, and after-hours paging.",
+  "requestFramePermissions": []
+}
