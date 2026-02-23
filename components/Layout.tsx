@@ -5,6 +5,24 @@ import { useStore } from '../store';
 import { translations } from '../utils';
 import { Toast } from './UI';
 
+const NotificationToast = () => {
+  const { notification } = useStore();
+  if (!notification) return null;
+  return (
+    <div className="absolute top-6 left-4 right-4 z-50 animate-slide-down">
+      <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4 flex items-center gap-3">
+        <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center shrink-0 font-bold text-sm">
+          {notification.sender.charAt(0)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-sm text-slate-900 truncate">{notification.sender}</p>
+          <p className="text-xs text-slate-500 truncate">{notification.preview}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const PhoneFrame = ({ children }: { children?: React.ReactNode }) => (
   <div className="min-h-screen bg-slate-100 sm:flex sm:items-center sm:justify-center sm:p-4">
     <div className="w-full sm:max-w-[390px] h-[100dvh] sm:h-[844px] bg-white sm:rounded-[3rem] sm:border-[8px] sm:border-slate-900 sm:shadow-2xl overflow-hidden relative flex flex-col">
@@ -12,6 +30,7 @@ export const PhoneFrame = ({ children }: { children?: React.ReactNode }) => (
       <div className="hidden sm:block h-4 shrink-0"></div>
       {children}
       <Toast />
+      <NotificationToast />
     </div>
   </div>
 );
@@ -27,13 +46,21 @@ export const TopBar = ({ title, left, right, transparent = false }: any) => (
 export const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, language } = useStore();
+  const { currentUser, language, conversations } = useStore();
   const t = translations[language];
 
   if (!currentUser) return null;
 
   const hiddenRoutes = ['/chat/', '/call-active', '/anamnesis-wizard'];
   if (hiddenRoutes.some(r => location.pathname.startsWith(r))) return null;
+
+  // G5 — Compute total unread for badge
+  const totalUnread = conversations
+    .filter(c => c.doctorUid === currentUser.uid || c.patientUid === currentUser.uid || (currentUser.role === 'assistant' && c.doctorUid === 'doc-1'))
+    .reduce((sum, c) => {
+      const count = currentUser.role === 'patient' ? c.unreadCounts.patient : c.unreadCounts.doctor;
+      return sum + count;
+    }, 0);
 
   const isActive = (path: string) => {
     if (path === '/inbox') return location.pathname === '/inbox' || location.pathname.startsWith('/chat/');
@@ -46,7 +73,14 @@ export const BottomNav = () => {
   return (
     <div className="absolute bottom-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-md border-t border-slate-200 flex items-center justify-around pb-4 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
       <button onClick={() => navigate('/inbox')} className={itemClass(isActive('/inbox'))}>
-        <RiMessage3Line size={24} />
+        <div className="relative">
+          <RiMessage3Line size={24} />
+          {totalUnread > 0 && (
+            <div className="absolute -top-1.5 -right-2 min-w-[16px] h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold px-1">
+              {totalUnread > 9 ? '9+' : totalUnread}
+            </div>
+          )}
+        </div>
         <span className="text-[10px] font-bold">{t.inbox}</span>
       </button>
 

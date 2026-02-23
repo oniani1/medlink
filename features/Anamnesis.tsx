@@ -5,7 +5,8 @@ import { Button, Input, Avatar, Modal } from '../components/UI';
 import { TopBar } from '../components/Layout';
 import { RiEdit2Line, RiAddLine, RiCloseLine, RiDeleteBinLine, RiHistoryLine, RiArrowLeftLine } from 'react-icons/ri';
 import { format, formatDistanceToNow } from 'date-fns';
-import { translations } from '../utils';
+import { ka } from 'date-fns/locale';
+import { translations, translateValue } from '../utils';
 
 const SECTIONS = [
   'Demographics', 'Emergency', 'Allergies', 'Medications', 'Conditions', 'Surgeries', 'Habits', 'Notes'
@@ -95,6 +96,13 @@ export const AnamnesisWizard = () => {
         title={getSectionTitle(SECTIONS[step])}
         left={<button onClick={() => step > 0 ? setStep(step - 1) : navigate(-1)} className="text-slate-500 p-2"><RiArrowLeftLine size={24}/></button>}
       />
+
+      <div className="flex items-center justify-center gap-1.5 py-2 bg-slate-50 border-b border-slate-100">
+        {SECTIONS.map((_, i) => (
+          <div key={i} className={`w-2 h-2 rounded-full transition-all ${i === step ? 'bg-teal-500 scale-125' : i < step ? 'bg-teal-300' : 'bg-slate-200'}`} />
+        ))}
+        <span className="ml-2 text-xs text-slate-400 font-medium">{t.step_of} {step + 1} {SECTIONS.length}{t.of}</span>
+      </div>
 
       <div className="flex-1 p-6 overflow-y-auto pb-24">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">{getSectionTitle(SECTIONS[step])}</h2>
@@ -261,6 +269,11 @@ export const AnamnesisView = () => {
     chronicConditions: 'conditions',
     smokingAlcohol: 'habits',
     freeNotes: 'notes',
+    familyHistory: 'family_history',
+    obgyn: 'obgyn',
+    vaccines: 'vaccines',
+    lastPeriod: 'last_period',
+    pregnancies: 'pregnancies',
   };
 
   const getTranslatedKey = (key: string) => {
@@ -268,9 +281,10 @@ export const AnamnesisView = () => {
       return t[mapped as keyof typeof t] || t[key.toLowerCase() as keyof typeof t] || key;
   }
 
+  const dateLocale = language === 'ka' ? { locale: ka } : {};
   const lastUpdated = (targetUser as any)?.anamnesisLastUpdatedAt;
   const lastUpdatedText = lastUpdated
-    ? formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })
+    ? formatDistanceToNow(new Date(lastUpdated), { addSuffix: true, ...dateLocale })
     : t.today;
 
   return (
@@ -297,7 +311,14 @@ export const AnamnesisView = () => {
        </div>
 
        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-12 space-y-3">
-         {Object.entries(anamnesis).map(([key, val]: any) => (
+         {Object.entries(anamnesis).map(([key, val]: any) => {
+           // R3 — Hide obgyn section if enabled===false
+           if (key === 'obgyn' && val && val.enabled === false) return null;
+
+           // Y9 — Hide empty string values at top level
+           if (val === '' || val === null || val === undefined) return null;
+
+           return (
            <div key={key} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 relative">
              <div className="flex justify-between items-start mb-2">
                <h3 className="font-bold text-slate-800 capitalize text-sm">{getTranslatedKey(key)}</h3>
@@ -307,10 +328,12 @@ export const AnamnesisView = () => {
                {Array.isArray(val) ? (
                  val.length ? val.map((v: any, i: number) => (
                    <div key={i} className="mb-1 pb-1 border-b border-slate-50 last:border-0 last:pb-0 last:mb-0">
-                     {typeof v === 'string' ? v : (
+                     {typeof v === 'string' ? translateValue(v, language) : (
                          <div className="flex justify-between">
-                             <span className="font-medium">{v.name}</span>
+                             <span className="font-medium">{translateValue(v.name, language)}</span>
                              {v.dose && <span className="text-slate-400 text-xs">{v.dose}</span>}
+                             {v.frequency && <span className="text-slate-400 text-xs">{translateValue(v.frequency, language)}</span>}
+                             {v.date && <span className="text-slate-400 text-xs">{v.date}</span>}
                          </div>
                      )}
                    </div>
@@ -318,21 +341,25 @@ export const AnamnesisView = () => {
                ) : (
                  typeof val === 'object' && val !== null ?
                  <div className="space-y-2">
-                     {Object.entries(val).map(([k, v]: any) => {
-                         if (typeof v === 'object' && v !== null) return null;
+                     {Object.entries(key === 'obgyn' && val.data ? val.data : val).map(([k, v]: any) => {
+                         // R3 — Skip boolean/enabled fields and nested objects
+                         if (typeof v === 'boolean' || typeof v === 'object' || k === 'enabled' || k === 'data') return null;
+                         // Y9 — Skip empty values
+                         if (v === '' || v === null || v === undefined) return null;
                          return (
                             <div key={k} className="flex justify-between items-baseline gap-2">
                                 <span className="text-xs text-slate-400 uppercase shrink-0">{getTranslatedKey(k)}</span>
-                                <span className="font-medium text-right truncate">{v?.toString()}</span>
+                                <span className="font-medium text-right truncate">{translateValue(v?.toString(), language)}</span>
                             </div>
                          );
                      })}
                  </div>
-                 : val?.toString()
+                 : typeof val === 'string' ? translateValue(val, language) : val?.toString()
                )}
              </div>
            </div>
-         ))}
+           );
+         })}
        </div>
 
        <Modal isOpen={!!historySection} onClose={() => setHistorySection(null)} title={t.edit_history}>

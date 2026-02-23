@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RiSearchLine, RiStarFill, RiMessage3Line, RiUserSearchLine } from 'react-icons/ri';
+import { RiSearchLine, RiStarFill, RiMessage3Line, RiUserSearchLine, RiRefreshLine } from 'react-icons/ri';
 import { useStore } from '../store';
 import { translations } from '../utils';
 import { Avatar } from '../components/UI';
@@ -12,8 +12,35 @@ export const InboxScreen = () => {
   const [filter, setFilter] = useState<'all' | 'unread' | 'starred'>('all');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef(0);
   const navigate = useNavigate();
   const t = translations[language];
+
+  // G7 — Pull-to-refresh handler
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!scrollContainerRef.current || scrollContainerRef.current.scrollTop > 0) return;
+    const diff = e.touches[0].clientY - touchStartY.current;
+    if (diff > 0 && diff < 120) {
+      setPullDistance(diff);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (pullDistance > 60) {
+      setRefreshing(true);
+      setPullDistance(0);
+      setTimeout(() => setRefreshing(false), 1000);
+    } else {
+      setPullDistance(0);
+    }
+  }, [pullDistance]);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 600);
@@ -85,7 +112,18 @@ export const InboxScreen = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24 pt-2">
+      <div
+        ref={scrollContainerRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="flex-1 overflow-y-auto pb-24 pt-2"
+      >
+        {(pullDistance > 0 || refreshing) && (
+          <div className="flex justify-center py-3" style={{ height: refreshing ? 48 : pullDistance * 0.5 }}>
+            <RiRefreshLine size={20} className={`text-teal-500 transition-transform ${refreshing ? 'animate-spin' : ''}`} style={{ transform: `rotate(${pullDistance * 3}deg)` }} />
+          </div>
+        )}
         {loading ? (
           <div className="space-y-1">
             {[1, 2, 3].map(i => (
@@ -118,7 +156,7 @@ export const InboxScreen = () => {
                 className={`flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors border-b border-slate-50 cursor-pointer ${unread > 0 ? 'bg-teal-50/30' : ''}`}
               >
                 <div className="relative">
-                  <Avatar name={name || 'User'} color={partner?.avatarColor} />
+                  <Avatar name={name || 'User'} color={partner?.avatarColor} src={partner?.avatarUrl} />
                   {unread > 0 && (
                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-sm">
                       {unread}

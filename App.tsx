@@ -1,5 +1,5 @@
-import React from 'react';
-import { HashRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { HashRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { PhoneFrame, BottomNav, RoleSwitcher } from './components/Layout';
 import { Splash, Login, RoleSelect } from './features/Auth';
 import { InboxScreen } from './features/Inbox';
@@ -10,13 +10,63 @@ import { ConnectionRequests, DoctorProfile, DoctorDirectory } from './features/D
 import { ConnectToDoctor } from './features/Patient';
 import { useStore } from './store';
 
+const demoMessages = [
+  'გამარჯობა, ექიმო!',
+  'როდის შემიძლია მოვიდე კონსულტაციაზე?',
+  'გმადლობთ პასუხისთვის.',
+  'ანალიზების შედეგები მზადაა.',
+  'კარგად ვარ, მადლობა!',
+  'მედიკამენტი დავიწყე მიღება.',
+  'შემდეგ კვირას რა დღეს ხართ თავისუფალი?',
+  'წნევა ნორმალიზდა.',
+];
+
 const ProtectedLayout = () => {
-  const { currentUser } = useStore();
+  const { currentUser, conversations, users, sendMessage, showNotification } = useStore();
+  const location = useLocation();
+
   if (!currentUser) return <Navigate to="/auth/login" />;
-  
+
+  // F4 — Demo: simulate incoming messages every 45s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const state = useStore.getState();
+      if (!state.currentUser) return;
+      const userConvs = state.conversations.filter(c =>
+        (c.doctorUid === state.currentUser!.uid || c.patientUid === state.currentUser!.uid) && !c.isBlocked
+      );
+      if (userConvs.length === 0) return;
+
+      const conv = userConvs[Math.floor(Math.random() * userConvs.length)];
+      const partnerUid = state.currentUser!.role === 'patient' ? conv.doctorUid : conv.patientUid;
+      const partner = state.users.find(u => u.uid === partnerUid);
+      const partnerRole = partner?.role || 'patient';
+      const msg = demoMessages[Math.floor(Math.random() * demoMessages.length)];
+
+      state.sendMessage({
+        conversationId: conv.id,
+        senderUid: partnerUid,
+        senderRole: partnerRole as any,
+        type: 'text',
+        content: msg,
+      });
+
+      // Show notification if not viewing that conversation
+      const currentPath = window.location.hash;
+      if (!currentPath.includes(`/chat/${conv.id}`)) {
+        const senderName = partner?.displayName[state.language as 'ka'] || partner?.displayName.ka || '';
+        state.showNotification(senderName, msg);
+      }
+    }, 45000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <>
-      <Outlet />
+      <div key={location.pathname} className="flex-1 flex flex-col overflow-hidden animate-fade-in-scale">
+        <Outlet />
+      </div>
       <BottomNav />
       <RoleSwitcher />
     </>

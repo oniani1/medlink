@@ -5,6 +5,7 @@ export interface User {
   displayName: { ka: string; ru?: string; en?: string };
   languagePreference: 'ka' | 'ru' | 'en';
   avatarColor: string;
+  avatarUrl?: string;
   createdAt: string;
 }
 
@@ -119,4 +120,14 @@ export interface TimelineEvent {
   title: string;
   description?: string;
   date: string;
+}
+
+export interface Appointment {
+  id: string;
+  conversationId: string;
+  patientUid: string;
+  doctorUid: string;
+  scheduledAt: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  title: string;
 }

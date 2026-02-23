@@ -61,7 +61,7 @@ export const SettingsScreen = () => {
        <TopBar title={t.settings} />
        <div className="flex-1 overflow-y-auto p-6 pb-24">
          <div className="flex items-center gap-4 mb-8">
-            <Avatar name={currentUser.displayName[language as 'ka'] || currentUser.displayName.en} color={currentUser.avatarColor} size="lg" />
+            <Avatar name={currentUser.displayName[language as 'ka'] || currentUser.displayName.en} color={currentUser.avatarColor} src={currentUser.avatarUrl} size="lg" />
             <div>
               <h2 className="text-xl font-bold text-slate-900">{currentUser.displayName[language as 'ka']}</h2>
               <p className="text-teal-600 font-medium capitalize">{t[currentUser.role as 'doctor'] || currentUser.role}</p>

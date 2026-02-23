@@ -4,6 +4,7 @@ import { TopBar } from '../components/Layout';
 import { Button, Avatar, Input, Modal } from '../components/UI';
 import { RiCheckLine, RiCloseLine, RiTimeLine, RiSettings3Line, RiUserLine, RiAddLine, RiDeleteBinLine, RiQrCodeLine, RiWallet3Line, RiSearchLine, RiChat1Line, RiProhibitedLine, RiCalendarEventLine } from 'react-icons/ri';
 import { format } from 'date-fns';
+import { ka } from 'date-fns/locale';
 import { Doctor } from '../types';
 import { formatCurrency, translations } from '../utils';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ export const ConnectionRequests = () => {
     const t = translations[language];
 
     if (!currentUser || currentUser.role !== 'doctor') return null;
+    const dateLocale = language === 'ka' ? { locale: ka } : {};
 
     const reqs = connections.filter(c => c.doctorUid === currentUser.uid && c.status === 'pending');
 
@@ -26,10 +28,10 @@ export const ConnectionRequests = () => {
                         return (
                             <div key={r.id} className="border rounded-2xl p-4 mb-4 shadow-sm bg-white">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <Avatar name={pat?.displayName.en || 'P'} color={pat?.avatarColor} />
+                                    <Avatar name={pat?.displayName.en || 'P'} color={pat?.avatarColor} src={pat?.avatarUrl} />
                                     <div>
                                         <h3 className="font-bold text-slate-900 truncate">{pat?.displayName[language] || pat?.displayName.ka}</h3>
-                                        <p className="text-xs text-slate-500">{format(new Date(r.createdAt), 'MMM d, HH:mm')}</p>
+                                        <p className="text-xs text-slate-500">{format(new Date(r.createdAt), 'MMM d, HH:mm', dateLocale)}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
@@ -81,7 +83,7 @@ export const DoctorDirectory = () => {
                 <div className="space-y-4">
                     {filtered.map(doc => (
                          <div key={doc.uid} className="flex items-center gap-4 p-4 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
-                             <Avatar name={doc.displayName.en} color={doc.avatarColor} />
+                             <Avatar name={doc.displayName.en} color={doc.avatarColor} src={doc.avatarUrl} />
                              <div className="flex-1 min-w-0">
                                  <h3 className="font-bold text-slate-900 truncate">{doc.displayName[language] || doc.displayName.ka}</h3>
                                  <p className="text-xs text-teal-600 font-medium truncate">{(doc as any).specialties?.join(', ')}</p>
@@ -448,16 +450,38 @@ const SettingsEditor = ({ doctor, onUpdate }: { doctor: Doctor, onUpdate: (d: Pa
 };
 
 export const DoctorProfile = () => {
-  const { currentUser, updateDoctorSettings, language } = useStore();
+  const { currentUser, users, updateDoctorSettings, language } = useStore();
   const [tab, setTab] = useState<'profile' | 'schedule' | 'settings'>('profile');
   const t = translations[language];
 
-  if (!currentUser || currentUser.role !== 'doctor') return null;
+  if (!currentUser || (currentUser.role !== 'doctor' && currentUser.role !== 'assistant')) return null;
 
-  const doctor = currentUser as Doctor;
+  // For assistants, find their managed doctor
+  let doctor: Doctor;
+  if (currentUser.role === 'assistant') {
+    const managedDoctor = users.find(u => u.role === 'doctor' && (u as Doctor).assistants.includes(currentUser.uid)) as Doctor | undefined;
+    if (!managedDoctor) {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center bg-white h-full text-center p-6">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <RiUserLine size={28} className="text-slate-400" />
+          </div>
+          <p className="text-slate-500 text-sm">{t.no_colleagues}</p>
+        </div>
+      );
+    }
+    doctor = managedDoctor;
+  } else {
+    doctor = currentUser as Doctor;
+  }
 
+  const { showToast } = useStore();
   const handleUpdate = (data: Partial<Doctor>) => {
       updateDoctorSettings(doctor.uid, data);
+      // G9 — Toast on status change
+      if ('isManuallyBusy' in data) {
+        showToast(data.isManuallyBusy ? t.status_busy : t.status_active);
+      }
   };
 
   const tabLabels: Record<string, string> = {
@@ -470,7 +494,7 @@ export const DoctorProfile = () => {
     <div className="flex-1 flex flex-col bg-white h-full relative">
       <div className="px-6 pt-6 pb-2 border-b border-slate-100 bg-white sticky top-0 z-10">
           <div className="flex items-center gap-4 mb-6">
-              <Avatar name={doctor.displayName.en} color={doctor.avatarColor} size="lg" />
+              <Avatar name={doctor.displayName.en} color={doctor.avatarColor} src={doctor.avatarUrl} size="lg" />
               <div className="min-w-0 flex-1">
                   <h1 className="text-xl font-bold text-slate-900 truncate">{doctor.displayName[language] || doctor.displayName.ka}</h1>
                   <p className="text-teal-600 font-medium text-sm truncate">{doctor.specialties.join(', ')}</p>

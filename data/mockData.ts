@@ -1,7 +1,7 @@
 import { Doctor, Patient, User, Conversation, Message, Connection, Anamnesis, Payment, TimelineEvent } from '../types';
 import { generateId } from '../utils';
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 5;
 
 const makeDate = (daysAgo: number, hours = 10, mins = 0) => {
   const d = new Date();
@@ -25,6 +25,7 @@ export const seedMockData = () => {
     displayName: { ka: 'დრ. გიორგი ბერიძე', en: 'Dr. Giorgi Beridze' },
     languagePreference: 'ka',
     avatarColor: 'bg-teal-600',
+    avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=GiorgiB&backgroundColor=0d9488',
     createdAt: makeDate(90),
     doctorId: 'ML-1001',
     specialties: ['Cardiology', 'Therapy'],
@@ -54,6 +55,7 @@ export const seedMockData = () => {
     displayName: { ka: 'დრ. ნინო მაისურაძე', en: 'Dr. Nino Maisuradze' },
     languagePreference: 'en',
     avatarColor: 'bg-indigo-600',
+    avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=NinoM&backgroundColor=4f46e5',
     createdAt: makeDate(60),
     doctorId: 'ML-1002',
     specialties: ['Pediatrics'],
@@ -83,55 +85,62 @@ export const seedMockData = () => {
     displayName: { ka: 'ანა გელაშვილი (ასისტენტი)', en: 'Ana Gelashvili (Assistant)' },
     languagePreference: 'ka',
     avatarColor: 'bg-pink-500',
+    avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=AnaG&backgroundColor=ec4899',
     createdAt: makeDate(85),
   };
 
-  const patientData: Array<{ name_ka: string; name_en: string; phone: string; color: string; anamnesis: Anamnesis; anamnesisDate: string }> = [
+  const avatarColors = ['bg-slate-600', 'bg-slate-700', 'bg-slate-500', 'bg-slate-800', 'bg-slate-400'];
+  const avatarSeeds = ['TamarJ', 'LevanM', 'NatoK', 'DavidK', 'MariamT'];
+
+  const patientData: Array<{ name_ka: string; name_en: string; phone: string; color: string; avatarUrl: string; anamnesis: Anamnesis; anamnesisDate: string }> = [
     {
       name_ka: 'თამარ ჯანელიძე', name_en: 'Tamar Janelidze', phone: '+995599100001', color: 'bg-slate-600',
+      avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=TamarJ&backgroundColor=475569',
       anamnesisDate: makeDate(14),
       anamnesis: {
-        demographics: { dob: '1985-03-15', sex: 'Female' },
-        emergencyCard: { bloodType: 'A+', allergies: 'Penicillin', emergencyContactName: 'გიორგი ჯანელიძე', emergencyContactPhone: '+995599200001' },
-        allergies: ['Penicillin', 'Peanuts'],
-        medications: [{ name: 'Lisinopril', dose: '10mg', frequency: 'Daily' }, { name: 'Aspirin', dose: '100mg', frequency: 'Daily' }],
-        chronicConditions: ['Hypertension', 'Mild Asthma'],
-        surgeries: [{ name: 'Appendectomy', date: '2010-05-20' }],
-        familyHistory: 'Father has diabetes. Mother has hypertension.',
+        demographics: { dob: '1985-03-15', sex: 'მდედრობითი' },
+        emergencyCard: { bloodType: 'A+', allergies: 'პენიცილინი', emergencyContactName: 'გიორგი ჯანელიძე', emergencyContactPhone: '+995599200001' },
+        allergies: ['პენიცილინი', 'არაქისი'],
+        medications: [{ name: 'ლიზინოპრილი', dose: '10მგ', frequency: 'ყოველდღიურად' }, { name: 'ასპირინი', dose: '100მგ', frequency: 'ყოველდღიურად' }],
+        chronicConditions: ['ჰიპერტენზია', 'მსუბუქი ასთმა'],
+        surgeries: [{ name: 'აპენდექტომია', date: '2010-05-20' }],
+        familyHistory: 'მამას აქვს დიაბეტი. დედას აქვს ჰიპერტენზია.',
         obgyn: { enabled: true, data: { lastPeriod: '2026-01-20', pregnancies: '1' } },
         smokingAlcohol: { smoking: 'never', alcohol: 'socially', notes: '' },
-        vaccines: [{ name: 'COVID-19 (Pfizer)', date: '2021-06-15' }, { name: 'Flu', date: '2025-10-01' }],
-        freeNotes: 'Prefers morning appointments. Allergic reaction to Penicillin causes rash.',
+        vaccines: [{ name: 'COVID-19 (Pfizer)', date: '2021-06-15' }, { name: 'გრიპი', date: '2025-10-01' }],
+        freeNotes: 'ურჩევნია დილის ვიზიტები. პენიცილინზე ალერგიული რეაქცია — გამონაყარი.',
       }
     },
     {
       name_ka: 'ლევან მიქელაძე', name_en: 'Levan Mikeladze', phone: '+995599100002', color: 'bg-slate-700',
+      avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=LevanM&backgroundColor=334155',
       anamnesisDate: makeDate(30),
       anamnesis: {
-        demographics: { dob: '1972-11-08', sex: 'Male' },
-        emergencyCard: { bloodType: 'O-', allergies: 'None', emergencyContactName: 'ნინო მიქელაძე', emergencyContactPhone: '+995599200002' },
+        demographics: { dob: '1972-11-08', sex: 'მამრობითი' },
+        emergencyCard: { bloodType: 'O-', allergies: 'არცერთი', emergencyContactName: 'ნინო მიქელაძე', emergencyContactPhone: '+995599200002' },
         allergies: [],
-        medications: [{ name: 'Metformin', dose: '500mg', frequency: 'Twice daily' }],
-        chronicConditions: ['Type 2 Diabetes'],
-        surgeries: [{ name: 'Knee Arthroscopy', date: '2018-03-12' }],
-        familyHistory: 'Both parents had cardiovascular disease.',
+        medications: [{ name: 'მეტფორმინი', dose: '500მგ', frequency: 'დღეში ორჯერ' }],
+        chronicConditions: ['ტიპი 2 დიაბეტი'],
+        surgeries: [{ name: 'მუხლის ართროსკოპია', date: '2018-03-12' }],
+        familyHistory: 'ორივე მშობელს ჰქონდა გულ-სისხლძარღვთა დაავადება.',
         obgyn: { enabled: false },
-        smokingAlcohol: { smoking: 'former', alcohol: 'socially', notes: 'Quit smoking in 2015' },
+        smokingAlcohol: { smoking: 'former', alcohol: 'socially', notes: 'თამბაქო მოთიშა 2015 წელს' },
         vaccines: [{ name: 'COVID-19 (Sinopharm)', date: '2021-08-20' }],
-        freeNotes: 'Regular check-ups every 3 months for diabetes management.',
+        freeNotes: 'რეგულარული შემოწმება 3 თვეში ერთხელ დიაბეტის მართვისთვის.',
       }
     },
     {
       name_ka: 'ნატო კვარაცხელია', name_en: 'Nato Kvaratskhelia', phone: '+995599100003', color: 'bg-slate-500',
+      avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=NatoK&backgroundColor=64748b',
       anamnesisDate: makeDate(45),
       anamnesis: {
-        demographics: { dob: '1998-07-22', sex: 'Female' },
-        emergencyCard: { bloodType: 'B+', allergies: 'Sulfa drugs', emergencyContactName: 'მარიამ კვარაცხელია', emergencyContactPhone: '+995599200003' },
-        allergies: ['Sulfa drugs', 'Latex'],
+        demographics: { dob: '1998-07-22', sex: 'მდედრობითი' },
+        emergencyCard: { bloodType: 'B+', allergies: 'სულფა პრეპარატები', emergencyContactName: 'მარიამ კვარაცხელია', emergencyContactPhone: '+995599200003' },
+        allergies: ['სულფა პრეპარატები', 'ლატექსი'],
         medications: [],
         chronicConditions: [],
         surgeries: [],
-        familyHistory: 'No significant family history.',
+        familyHistory: 'მნიშვნელოვანი ოჯახის ანამნეზი არ არის.',
         obgyn: { enabled: true, data: { lastPeriod: '2026-02-01' } },
         smokingAlcohol: { smoking: 'never', alcohol: 'never', notes: '' },
         vaccines: [{ name: 'COVID-19 (Pfizer)', date: '2021-07-10' }, { name: 'HPV', date: '2016-03-15' }],
@@ -140,36 +149,38 @@ export const seedMockData = () => {
     },
     {
       name_ka: 'დავით ხარაიშვილი', name_en: 'Davit Kharaishvili', phone: '+995599100004', color: 'bg-slate-800',
+      avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=DavidK&backgroundColor=1e293b',
       anamnesisDate: makeDate(7),
       anamnesis: {
-        demographics: { dob: '1955-01-30', sex: 'Male' },
-        emergencyCard: { bloodType: 'AB+', allergies: 'Ibuprofen', emergencyContactName: 'ელენე ხარაიშვილი', emergencyContactPhone: '+995599200004' },
-        allergies: ['Ibuprofen', 'Shellfish'],
-        medications: [{ name: 'Amlodipine', dose: '5mg', frequency: 'Daily' }, { name: 'Atorvastatin', dose: '20mg', frequency: 'Daily' }, { name: 'Omeprazole', dose: '20mg', frequency: 'Daily' }],
-        chronicConditions: ['Hypertension', 'Hyperlipidemia', 'GERD'],
-        surgeries: [{ name: 'CABG (Coronary Bypass)', date: '2019-11-15' }, { name: 'Cholecystectomy', date: '2005-06-10' }],
-        familyHistory: 'Father died of MI at 62. Mother had stroke.',
+        demographics: { dob: '1955-01-30', sex: 'მამრობითი' },
+        emergencyCard: { bloodType: 'AB+', allergies: 'იბუპროფენი', emergencyContactName: 'ელენე ხარაიშვილი', emergencyContactPhone: '+995599200004' },
+        allergies: ['იბუპროფენი', 'ზღვის პროდუქტები'],
+        medications: [{ name: 'ამლოდიპინი', dose: '5მგ', frequency: 'ყოველდღიურად' }, { name: 'ატორვასტატინი', dose: '20მგ', frequency: 'ყოველდღიურად' }, { name: 'ომეპრაზოლი', dose: '20მგ', frequency: 'ყოველდღიურად' }],
+        chronicConditions: ['ჰიპერტენზია', 'ჰიპერლიპიდემია', 'GERD (რეფლუქსი)'],
+        surgeries: [{ name: 'კორონარული შუნტირება', date: '2019-11-15' }, { name: 'ქოლეცისტექტომია', date: '2005-06-10' }],
+        familyHistory: 'მამა გარდაიცვალა მიოკარდიუმის ინფარქტით 62 წლის ასაკში. დედას ჰქონდა ინსულტი.',
         obgyn: { enabled: false },
-        smokingAlcohol: { smoking: 'former', alcohol: 'never', notes: 'Quit smoking after bypass surgery' },
-        vaccines: [{ name: 'COVID-19 (Pfizer x3)', date: '2021-12-01' }, { name: 'Pneumococcal', date: '2023-03-15' }],
-        freeNotes: 'Post-CABG patient. Needs annual cardiac follow-up. Prefers afternoon appointments.',
+        smokingAlcohol: { smoking: 'former', alcohol: 'never', notes: 'თამბაქო მოთიშა შუნტირების შემდეგ' },
+        vaccines: [{ name: 'COVID-19 (Pfizer x3)', date: '2021-12-01' }, { name: 'პნევმოკოკური', date: '2023-03-15' }],
+        freeNotes: 'პოსტ-შუნტირების პაციენტი. საჭიროებს წლიურ კარდიოლოგიურ კონტროლს. ურჩევნია საღამოს ვიზიტები.',
       }
     },
     {
       name_ka: 'მარიამ ცხვედიანი', name_en: 'Mariam Tskhvediani', phone: '+995599100005', color: 'bg-slate-400',
+      avatarUrl: 'https://api.dicebear.com/9.x/lorelei/svg?seed=MariamT&backgroundColor=94a3b8',
       anamnesisDate: makeDate(3),
       anamnesis: {
-        demographics: { dob: '2015-09-12', sex: 'Female' },
-        emergencyCard: { bloodType: 'A-', allergies: 'None', emergencyContactName: 'ქეთი ცხვედიანი (დედა)', emergencyContactPhone: '+995599200005' },
+        demographics: { dob: '2015-09-12', sex: 'მდედრობითი' },
+        emergencyCard: { bloodType: 'A-', allergies: 'არცერთი', emergencyContactName: 'ქეთი ცხვედიანი (დედა)', emergencyContactPhone: '+995599200005' },
         allergies: [],
         medications: [],
         chronicConditions: [],
         surgeries: [],
-        familyHistory: 'No significant family history.',
+        familyHistory: 'მნიშვნელოვანი ოჯახის ანამნეზი არ არის.',
         obgyn: { enabled: false },
         smokingAlcohol: { smoking: 'never', alcohol: 'never', notes: '' },
-        vaccines: [{ name: 'MMR', date: '2016-09-12' }, { name: 'DTaP', date: '2020-09-12' }, { name: 'COVID-19 (Pfizer pediatric)', date: '2022-02-15' }],
-        freeNotes: 'Pediatric patient. Parent: Keti Tskhvediani.',
+        vaccines: [{ name: 'MMR (წითელა-წითურა-ყბაყურა)', date: '2016-09-12' }, { name: 'DTaP (დიფტერია-ტეტანუსი)', date: '2020-09-12' }, { name: 'COVID-19 (Pfizer პედიატრიული)', date: '2022-02-15' }],
+        freeNotes: 'პედიატრიული პაციენტი. მშობელი: ქეთი ცხვედიანი.',
       }
     },
   ];
@@ -181,6 +192,7 @@ export const seedMockData = () => {
     displayName: { ka: p.name_ka, en: p.name_en },
     languagePreference: 'ka',
     avatarColor: p.color,
+    avatarUrl: p.avatarUrl,
     createdAt: makeDate(60 - i * 5),
     anamnesis: p.anamnesis,
     anamnesisLastUpdatedAt: p.anamnesisDate,

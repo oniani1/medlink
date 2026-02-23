@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Session & audit artifacts
+SESSION.md
+AUDIT-REPORT.md
+audit-*.png
+verify-*.png
+*.output

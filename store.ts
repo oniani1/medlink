@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { User, Conversation, Message, Connection, Doctor, Patient, Payment, AnamnesisEdit, TimelineEvent } from './types';
+import { User, Conversation, Message, Connection, Doctor, Patient, Payment, AnamnesisEdit, TimelineEvent, Appointment } from './types';
 import { seedMockData } from './data/mockData';
-import { generateId } from './utils';
+import { generateId, translations } from './utils';
 
 seedMockData();
 
@@ -18,13 +18,16 @@ interface AppState {
   language: 'ka' | 'en';
   anamnesisHistory: AnamnesisEdit[];
   timelineEvents: TimelineEvent[];
+  appointments: Appointment[];
   toastMessage: string | null;
+  notification: { sender: string; preview: string } | null;
 
   setCurrentUser: (uid: string) => void;
   setLanguage: (lang: 'ka' | 'en') => void;
   logout: () => void;
   deleteAccount: () => void;
   showToast: (msg: string) => void;
+  showNotification: (sender: string, preview: string) => void;
 
   // Actions
   sendMessage: (msg: Omit<Message, 'id' | 'createdAt'>) => void;
@@ -41,6 +44,7 @@ interface AppState {
   addDoctorException: (doctorUid: string, exception: { start: string, end: string, label: string }) => void;
   purchaseExport: (conversationId: string) => void;
   addTimelineEvent: (event: Omit<TimelineEvent, 'id'>) => void;
+  scheduleAppointment: (appointment: Omit<Appointment, 'id'>) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -52,8 +56,10 @@ export const useStore = create<AppState>((set, get) => ({
   payments: load('medlink_payments'),
   anamnesisHistory: [],
   timelineEvents: load('medlink_timeline_events'),
+  appointments: load('medlink_appointments'),
   language: (localStorage.getItem('medlink_lang') as any) || 'ka',
   toastMessage: null,
+  notification: null,
 
   setCurrentUser: (uid) => {
     const user = get().users.find(u => u.uid === uid) || null;
@@ -81,12 +87,18 @@ export const useStore = create<AppState>((set, get) => ({
       payments: [],
       anamnesisHistory: [],
       timelineEvents: [],
+      appointments: [],
     });
   },
 
   showToast: (msg) => {
     set({ toastMessage: msg });
     setTimeout(() => set({ toastMessage: null }), 2500);
+  },
+
+  showNotification: (sender, preview) => {
+    set({ notification: { sender, preview } });
+    setTimeout(() => set({ notification: null }), 4000);
   },
 
   sendMessage: (msgData) => {
@@ -141,7 +153,7 @@ export const useStore = create<AppState>((set, get) => ({
                     doctorUid: c.doctorUid,
                     patientUid: c.patientUid,
                     lastMessageAt: new Date().toISOString(),
-                    lastMessagePreview: 'System: Connection accepted',
+                    lastMessagePreview: translations[get().language].connection_accepted,
                     unreadCounts: { doctor: 0, patient: 0 },
                     isBlocked: false,
                     isStarred: false,
@@ -284,5 +296,15 @@ export const useStore = create<AppState>((set, get) => ({
     const nextEvents = [newEvent, ...get().timelineEvents];
     save('medlink_timeline_events', nextEvents);
     set({ timelineEvents: nextEvents });
+  },
+
+  scheduleAppointment: (appointment) => {
+    const newAppt: Appointment = {
+      ...appointment,
+      id: generateId(),
+    };
+    const nextAppts = [...get().appointments, newAppt];
+    save('medlink_appointments', nextAppts);
+    set({ appointments: nextAppts });
   }
 }));

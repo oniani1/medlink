@@ -211,6 +211,29 @@ export const translations = {
     check_id_try_again: 'შეამოწმეთ ID და სცადეთ ხელახლა',
     privacy_policy_text: 'MedLink პერსონალურ მონაცემთა დაცვის პოლიტიკა\n\n1. ჩვენ ვაგროვებთ მხოლოდ იმ ინფორმაციას, რომელიც აუცილებელია სამედიცინო კომუნიკაციისთვის.\n\n2. თქვენი სამედიცინო მონაცემები დაშიფრულია და მხოლოდ ავტორიზებულ მხარეებს აქვთ წვდომა.\n\n3. ჩვენ არ ვყიდით და არ ვაზიარებთ თქვენს მონაცემებს მესამე მხარეებთან.\n\n4. თქვენ გაქვთ უფლება მოითხოვოთ თქვენი მონაცემების წაშლა ნებისმიერ დროს.\n\n5. კომუნიკაცია ექიმსა და პაციენტს შორის კონფიდენციალურია.\n\n6. გადახდის ინფორმაცია დამუშავდება უსაფრთხო არხებით.',
     enter_doctor_id_placeholder: 'შეიყვანეთ ექიმის ID (მაგ. ML-1001)',
+    // Anamnesis sections
+    family_history: 'ოჯახის ანამნეზი',
+    obgyn: 'მეან-გინეკოლოგია',
+    vaccines: 'ვაქცინები',
+    enabled: 'ჩართული',
+    last_period: 'ბოლო მენსტრუაცია',
+    pregnancies: 'ორსულობები',
+    male: 'მამრობითი',
+    female: 'მდედრობითი',
+    daily: 'ყოველდღიურად',
+    twice_daily: 'დღეში ორჯერ',
+    connection_accepted: 'კავშირი მიღებულია',
+    // Appointments
+    schedule_appointment: 'ვიზიტის დაგეგმვა',
+    select_date: 'აირჩიეთ თარიღი',
+    select_time: 'აირჩიეთ დრო',
+    appointment_scheduled: 'ვიზიტი დაგეგმილია',
+    // UI
+    new_message_from: 'ახალი შეტყობინება',
+    step_of: 'ნაბიჯი',
+    of: '-დან',
+    status_changed: 'სტატუსი შეიცვალა',
+    typing: 'წერს...',
   },
   en: {
     app_name: 'MedLink',
@@ -410,6 +433,29 @@ export const translations = {
     check_id_try_again: 'Check the ID and try again',
     privacy_policy_text: 'MedLink Privacy Policy\n\n1. We collect only the information necessary for medical communication.\n\n2. Your medical data is encrypted and only accessible to authorized parties.\n\n3. We do not sell or share your data with third parties.\n\n4. You have the right to request deletion of your data at any time.\n\n5. Communication between doctor and patient is confidential.\n\n6. Payment information is processed through secure channels.',
     enter_doctor_id_placeholder: 'Enter Doctor ID (e.g. ML-1001)',
+    // Anamnesis sections
+    family_history: 'Family History',
+    obgyn: 'OB/GYN',
+    vaccines: 'Vaccines',
+    enabled: 'Enabled',
+    last_period: 'Last Period',
+    pregnancies: 'Pregnancies',
+    male: 'Male',
+    female: 'Female',
+    daily: 'Daily',
+    twice_daily: 'Twice Daily',
+    connection_accepted: 'Connection accepted',
+    // Appointments
+    schedule_appointment: 'Schedule Appointment',
+    select_date: 'Select Date',
+    select_time: 'Select Time',
+    appointment_scheduled: 'Appointment Scheduled',
+    // UI
+    new_message_from: 'New message from',
+    step_of: 'Step',
+    of: 'of',
+    status_changed: 'Status changed',
+    typing: 'typing...',
   },
 };
 
@@ -437,3 +483,53 @@ export const isAfterHours = (doctor: Doctor): boolean => {
 };
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);
+
+// Translate stored English values → Georgian display
+const valueMap: Record<string, string> = {
+  // Sex
+  'Female': 'მდედრობითი',
+  'female': 'მდედრობითი',
+  'Male': 'მამრობითი',
+  'male': 'მამრობითი',
+  // Frequency
+  'Daily': 'ყოველდღიურად',
+  'daily': 'ყოველდღიურად',
+  'Twice daily': 'დღეში ორჯერ',
+  'twice daily': 'დღეში ორჯერ',
+  // Habits
+  'never': 'არასდროს',
+  'Never': 'არასდროს',
+  'former': 'წარსულში',
+  'Former': 'წარსულში',
+  'current': 'ამჟამად',
+  'Current': 'ამჟამად',
+  'socially': 'იშვიათად',
+  'Socially': 'იშვიათად',
+  'frequently': 'ხშირად',
+  'Frequently': 'ხშირად',
+  // Conditions
+  'Hypertension': 'ჰიპერტენზია',
+  'Mild Asthma': 'მსუბუქი ასთმა',
+  'Type 2 Diabetes': 'ტიპი 2 დიაბეტი',
+  'Hyperlipidemia': 'ჰიპერლიპიდემია',
+  'GERD': 'GERD (რეფლუქსი)',
+  // Allergies
+  'Penicillin': 'პენიცილინი',
+  'Peanuts': 'არაქისი',
+  'Sulfa drugs': 'სულფა პრეპარატები',
+  'Latex': 'ლატექსი',
+  'Ibuprofen': 'იბუპროფენი',
+  'Shellfish': 'ზღვის პროდუქტები',
+  'None': 'არცერთი',
+  // Surgeries
+  'Appendectomy': 'აპენდექტომია',
+  'Knee Arthroscopy': 'მუხლის ართროსკოპია',
+  'CABG (Coronary Bypass)': 'კორონარული შუნტირება',
+  'Cholecystectomy': 'ქოლეცისტექტომია',
+  // Blood types stay as-is
+};
+
+export const translateValue = (val: string, lang: 'ka' | 'en'): string => {
+  if (lang !== 'ka') return val;
+  return valueMap[val] || val;
+};

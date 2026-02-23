@@ -9,6 +9,7 @@ import {
   RiImageLine, RiPlayFill, RiPauseFill, RiStopFill
 } from 'react-icons/ri';
 import { format, isSameDay } from 'date-fns';
+import { ka } from 'date-fns/locale';
 import { useStore } from '../store';
 import { translations, isAfterHours, formatCurrency } from '../utils';
 import { Avatar, Modal, Button, Input } from '../components/UI';
@@ -16,6 +17,7 @@ import { TopBar } from '../components/Layout';
 
 const TimelineView = ({ patientId, doctorUid, onClose }: { patientId: string, doctorUid: string, onClose: () => void }) => {
     const { anamnesisHistory, messages, timelineEvents, addTimelineEvent, currentUser, language } = useStore();
+    const dateLocale = language === 'ka' ? { locale: ka } : {};
     const [showAddModal, setShowAddModal] = useState(false);
     const [newEvent, setNewEvent] = useState({ type: 'note', title: '', description: '', date: format(new Date(), "yyyy-MM-dd'T'HH:mm") });
     const t = translations[language];
@@ -80,7 +82,7 @@ const TimelineView = ({ patientId, doctorUid, onClose }: { patientId: string, do
                                 {e.source === 'manual' && getTypeIcon((e.data as any).type)}
                         </div>
                         <div className="flex-1">
-                            <span className="text-xs text-slate-400 font-medium">{format(new Date(e.date), 'MMM d, HH:mm')}</span>
+                            <span className="text-xs text-slate-400 font-medium">{format(new Date(e.date), 'MMM d, HH:mm', dateLocale)}</span>
                             <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm mt-1">
                                 {e.source === 'anamnesis' && (
                                     <>
@@ -344,7 +346,13 @@ export const ChatScreen = () => {
   const [reminderDate, setReminderDate] = useState('');
   const [replyTo, setReplyTo] = useState<any>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [showTyping, setShowTyping] = useState(false);
+  const [lastSentId, setLastSentId] = useState<string | null>(null);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTitle, setAppointmentTitle] = useState('');
   const t = translations[language];
+  const dateLocale = language === 'ka' ? { locale: ka } : {};
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -395,6 +403,17 @@ export const ChatScreen = () => {
       replyToMessageId: replyTo?.id,
       ...extra
     });
+    // G8 — Track last sent message for animation
+    const latestMsg = [...useStore.getState().messages].filter(m => m.conversationId === conversation.id).pop();
+    if (latestMsg) setLastSentId(latestMsg.id);
+    setTimeout(() => setLastSentId(null), 500);
+
+    // G3 — Simulate typing indicator from partner
+    if (type === 'text' && !extra.silent) {
+      setShowTyping(true);
+      setTimeout(() => setShowTyping(false), 2000 + Math.random() * 1500);
+    }
+
     setText('');
     setReplyTo(null);
     setShowAttach(false);
@@ -462,7 +481,7 @@ export const ChatScreen = () => {
       if (!lastDate || !isSameDay(lastDate, msgDate)) {
         const isToday = isSameDay(msgDate, new Date());
         const isYesterday = isSameDay(msgDate, new Date(Date.now() - 86400000));
-        const dateLabel = isToday ? t.today : isYesterday ? t.yesterday : format(msgDate, 'MMM d, yyyy');
+        const dateLabel = isToday ? t.today : isYesterday ? t.yesterday : format(msgDate, 'MMM d, yyyy', dateLocale);
 
         elements.push(
           <div key={`date-${msg.id}`} className="flex justify-center my-4">
@@ -489,11 +508,11 @@ export const ChatScreen = () => {
         <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-1`}>
           {showAvatar && !isMe && (
              <div className="mr-2 mt-auto">
-               <Avatar name={partner?.displayName?.en || 'U'} color={partner?.avatarColor} size="sm" />
+               <Avatar name={partner?.displayName?.en || 'U'} color={partner?.avatarColor} src={partner?.avatarUrl} size="sm" />
              </div>
           )}
           <div
-             className={`max-w-[80%] p-3.5 rounded-2xl text-sm relative group shadow-sm ${isMe ? 'bg-teal-600 text-white rounded-tr-none' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'}`}
+             className={`max-w-[80%] p-3.5 rounded-2xl text-sm relative group shadow-sm ${isMe ? 'bg-teal-600 text-white rounded-tr-none' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'} ${msg.id === lastSentId ? 'animate-send-pop' : ''}`}
              onContextMenu={(e) => { e.preventDefault(); setReplyTo(msg); }}
           >
             {replyMsg && (
@@ -548,7 +567,7 @@ export const ChatScreen = () => {
 
             <button
                 onClick={() => setReplyTo(msg)}
-                className="absolute -right-2 -top-2 p-1.5 bg-slate-200 text-slate-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                className="absolute -right-2 -top-2 p-1.5 bg-slate-100 text-slate-400 rounded-full shadow-sm hover:bg-slate-200 hover:text-slate-600 transition-colors"
                 title="Reply"
             >
                 <RiReplyLine size={14}/>
@@ -567,7 +586,7 @@ export const ChatScreen = () => {
         left={<button onClick={() => navigate('/inbox')} className="p-2 text-slate-500"><RiArrowLeftLine size={24}/></button>}
         title={
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => currentUser.role === 'doctor' && partner?.role === 'patient' && navigate(`/patient-history/${partner.uid}`)}>
-            <Avatar name={partner?.displayName.en || 'U'} color={partner?.avatarColor} size="sm" />
+            <Avatar name={partner?.displayName.en || 'U'} color={partner?.avatarColor} src={partner?.avatarUrl} size="sm" />
             <div className="flex flex-col items-start">
                  <span className="text-sm font-bold text-slate-800 truncate max-w-[160px]">{partnerDisplayName}</span>
                  {currentUser.role === 'doctor' && partner?.role === 'patient' && (
@@ -585,6 +604,7 @@ export const ChatScreen = () => {
                      <button onClick={() => { setShowMenu(false); setShowTimeline(true); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm flex items-center gap-2"><RiTimeLine /> {t.timeline}</button>
                      {!isPatient && <button onClick={() => { setShowMenu(false); setShowTagsModal(true); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm flex items-center gap-2"><RiPriceTag3Line /> {t.manage_tags}</button>}
                      {!isPatient && <button onClick={() => { setShowMenu(false); setShowReminderModal(true); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm flex items-center gap-2"><RiTimeLine /> {t.set_reminder}</button>}
+                     <button onClick={() => { setShowMenu(false); setShowAppointmentModal(true); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm flex items-center gap-2"><RiCalendarEventFill /> {t.schedule_appointment}</button>
                      <button onClick={handleExport} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm flex items-center gap-2 text-slate-900 font-medium"><RiDownloadLine /> {t.export_chat}</button>
                  </div>
              )}
@@ -619,6 +639,15 @@ export const ChatScreen = () => {
 
       <div className="flex-1 overflow-y-auto p-4 space-y-1">
         {renderMessages()}
+        {showTyping && (
+          <div className="flex justify-start mb-1 animate-fade-in-scale">
+            <div className="bg-white text-slate-400 p-3.5 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm flex items-center gap-1">
+              <div className="w-2 h-2 bg-slate-300 rounded-full typing-dot"></div>
+              <div className="w-2 h-2 bg-slate-300 rounded-full typing-dot"></div>
+              <div className="w-2 h-2 bg-slate-300 rounded-full typing-dot"></div>
+            </div>
+          </div>
+        )}
         <div ref={scrollRef} />
       </div>
 
@@ -731,6 +760,40 @@ export const ChatScreen = () => {
       {!isPatient && <Modal isOpen={showReminderModal} onClose={() => setShowReminderModal(false)} title={t.set_reminder}>
           <Input type="datetime-local" label={t.date_time} value={reminderDate} onChange={(e:any) => setReminderDate(e.target.value)} />
           <Button fullWidth onClick={() => { setReminder(conversation.id, reminderDate); setShowReminderModal(false); }}>{t.save}</Button>
+      </Modal>}
+
+      {<Modal isOpen={showAppointmentModal} onClose={() => setShowAppointmentModal(false)} title={t.schedule_appointment}>
+          <div className="space-y-4">
+              <Input label={t.title} value={appointmentTitle} onChange={(e: any) => setAppointmentTitle(e.target.value)} placeholder={t.appointment} />
+              <div>
+                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wider mb-1.5 ml-1">{t.date_time}</label>
+                  <input
+                      type="datetime-local"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      value={appointmentDate}
+                      onChange={(e: any) => setAppointmentDate(e.target.value)}
+                  />
+              </div>
+              <Button fullWidth onClick={() => {
+                  if (!appointmentDate) return;
+                  const title = appointmentTitle || t.appointment;
+                  // Add timeline event
+                  useStore.getState().addTimelineEvent({
+                      patientUid: timelinePatientId,
+                      creatorUid: currentUser.uid,
+                      creatorRole: currentUser.role as any,
+                      type: 'appointment',
+                      title,
+                      description: format(new Date(appointmentDate), 'PPP p', dateLocale),
+                      date: appointmentDate,
+                  });
+                  // Send system message
+                  handleSend('system', `${t.appointment_scheduled}: ${title} — ${format(new Date(appointmentDate), 'MMM d, HH:mm', dateLocale)}`);
+                  setShowAppointmentModal(false);
+                  setAppointmentTitle('');
+                  setAppointmentDate('');
+              }}>{t.save}</Button>
+          </div>
       </Modal>}
     </div>
   );

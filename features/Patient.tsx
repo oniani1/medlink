@@ -75,14 +75,25 @@ export const ConnectToDoctor = () => {
         </button>
 
         {status === 'scanning' && (
-          <div className="mb-6 rounded-2xl overflow-hidden relative bg-slate-900 aspect-square max-h-48 w-full flex items-center justify-center animate-slide-up">
-            <div className="absolute inset-4 border-2 border-teal-400 rounded-xl opacity-60"></div>
-            <div className="absolute left-4 right-4 h-0.5 bg-teal-400 animate-bounce" style={{ animationDuration: '1.5s' }}></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full">
-                <RiCameraLine className="text-teal-400" />
+          <div className="mb-6 rounded-2xl overflow-hidden relative bg-slate-900 aspect-square max-h-48 w-full flex items-center justify-center animate-fade-in-scale">
+            {/* Corner brackets */}
+            <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-teal-400 rounded-tl-md"></div>
+            <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-teal-400 rounded-tr-md"></div>
+            <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-teal-400 rounded-bl-md"></div>
+            <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-teal-400 rounded-br-md"></div>
+            {/* Sweeping scan line */}
+            <div className="absolute left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-teal-400 to-transparent qr-scan-line"></div>
+            {/* Grid dots for visual depth */}
+            <div className="absolute inset-8 grid grid-cols-3 grid-rows-3 gap-4 opacity-20">
+              {[...Array(9)].map((_, i) => <div key={i} className="w-1 h-1 bg-teal-400 rounded-full mx-auto my-auto"></div>)}
+            </div>
+            {/* Center label */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-full mb-2">
+                <RiCameraLine className="text-teal-400 animate-pulse" />
                 <span className="text-teal-400 text-sm font-medium">{t.scanning}</span>
               </div>
+              <span className="text-teal-400/50 text-[10px]">QR Code</span>
             </div>
           </div>
         )}
@@ -122,7 +133,7 @@ export const ConnectToDoctor = () => {
         {status === 'found' && result && (
             <div className="border border-slate-200 rounded-2xl p-4 shadow-lg animate-slide-up">
                 <div className="flex items-start gap-4 mb-4 border-b border-slate-100 pb-4">
-                    <Avatar name={result.displayName.en} color={result.avatarColor} size="lg" />
+                    <Avatar name={result.displayName.en} color={result.avatarColor} src={result.avatarUrl} size="lg" />
                     <div>
                         <h2 className="text-lg font-bold text-slate-900">{result.displayName[language] || result.displayName.en}</h2>
                         <div className="flex flex-wrap gap-1 mt-1">
