@@ -8,10 +8,33 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       
+      html {
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+
       body {
         font-family: 'Inter', sans-serif;
         background-color: #f1f5f9;
         -webkit-tap-highlight-color: transparent;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        overscroll-behavior: none;
+      }
+
+      /* Prevent iOS Safari rubber-band scrolling on the body */
+      @media (max-width: 639px) {
+        html, body {
+          position: fixed;
+          width: 100%;
+        }
+      }
+
+      #root {
+        height: 100%;
+        overflow: hidden;
       }
       
       .no-scrollbar::-webkit-scrollbar {
