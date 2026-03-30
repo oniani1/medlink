@@ -409,7 +409,7 @@ export const ChatScreen = () => {
     setTimeout(() => setLastSentId(null), 500);
 
     // G3 — Simulate typing indicator from partner
-    if (type === 'text' && !extra.silent) {
+    if (type === 'text' && !(extra as any).silent) {
       setShowTyping(true);
       setTimeout(() => setShowTyping(false), 2000 + Math.random() * 1500);
     }
