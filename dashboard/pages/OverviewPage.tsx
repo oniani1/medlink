@@ -137,7 +137,7 @@ export function OverviewPage() {
   return (
     <div className="space-y-6">
       {/* Row 1: KPI Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <KPICard
           icon={FiUsers}
           label={t('total_doctors')}
@@ -173,9 +173,9 @@ export function OverviewPage() {
       </div>
 
       {/* Row 2: ROI Counter + Alerts */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {/* ROI Card */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
           <div className="mb-4">
             <h3 className="text-base font-bold text-slate-800">{t('roi_this_month')}</h3>
             <p className="text-sm text-slate-500 mt-0.5">
@@ -207,7 +207,7 @@ export function OverviewPage() {
         </div>
 
         {/* Alerts Panel */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
           <h3 className="text-base font-bold text-slate-800 mb-4">{t('alerts')}</h3>
           <div className="space-y-3">
             {alerts.map((alert) => {
@@ -232,13 +232,13 @@ export function OverviewPage() {
       </div>
 
       {/* Row 3: Message Trend + Response Time Trend */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {/* Message Trend (4 Weeks) */}
         <ChartCard
           title={lang === 'ka' ? 'შეტყობინებების ტრენდი (4 კვირა)' : 'Message Trend (4 Weeks)'}
           subtitle={lang === 'ka' ? 'გაგზავნილი + მიღებული' : 'Sent + Received'}
         >
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={last28Days} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                 <defs>
@@ -318,7 +318,7 @@ export function OverviewPage() {
           title={t('response_trend')}
           subtitle={lang === 'ka' ? 'სამიზნე: 20 წთ' : 'Target: 20 min'}
         >
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockAnalytics.responseTimeTrend} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />

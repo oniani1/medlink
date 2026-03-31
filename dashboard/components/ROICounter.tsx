@@ -70,7 +70,7 @@ export function ROICounter({ value, label, breakdown, subscriptionCost }: ROICou
   return (
     <div
       ref={containerRef}
-      className="rounded-2xl p-8 text-white relative overflow-hidden"
+      className="rounded-2xl p-4 md:p-8 text-white relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #134e4a 100%)' }}
     >
       {/* Subtle decorative circles */}
@@ -82,7 +82,7 @@ export function ROICounter({ value, label, breakdown, subscriptionCost }: ROICou
         <div className="text-teal-200 text-sm font-medium mb-2">{label}</div>
 
         {/* Main value */}
-        <div className="text-4xl font-bold tracking-tight mb-6">
+        <div className="text-2xl md:text-4xl font-bold tracking-tight mb-4 md:mb-6">
           {formatLari(displayValue)}
         </div>
 
@@ -107,7 +107,7 @@ export function ROICounter({ value, label, breakdown, subscriptionCost }: ROICou
           </div>
 
           {/* Breakdown labels */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 md:gap-x-6 gap-y-2">
             {breakdown.map((item, i) => (
               <div key={i} className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">

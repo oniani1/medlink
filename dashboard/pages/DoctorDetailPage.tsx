@@ -144,7 +144,7 @@ export function DoctorDetailPage() {
   return (
     <div className="space-y-6">
       {/* Top: Back + Doctor Header */}
-      <div className="flex items-start gap-5">
+      <div className="flex items-start gap-3 md:gap-5">
         <button
           onClick={() => navigate(-1)}
           className="p-2 rounded-lg hover:bg-slate-100 transition-colors mt-1 flex-shrink-0"
@@ -152,37 +152,45 @@ export function DoctorDetailPage() {
           <FiArrowLeft className="text-lg text-slate-600" />
         </button>
 
-        <div className="flex items-center gap-5 flex-1">
-          {/* Large avatar */}
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0"
-            style={{ backgroundColor: COLORS.primary }}
-          >
-            {initials}
-          </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 md:gap-5">
+            {/* Large avatar */}
+            <div
+              className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-white text-lg md:text-xl font-bold flex-shrink-0"
+              style={{ backgroundColor: COLORS.primary }}
+            >
+              {initials}
+            </div>
 
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-slate-800 truncate">{doctor.name[lang]}</h1>
-            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-teal-50 text-teal-700">
-                {lang === 'ka' ? doctor.specialty : doctor.specialtyEn}
-              </span>
-              <StatusBadge status={doctor.status} lang={lang} />
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg md:text-2xl font-bold text-slate-800 truncate">{doctor.name[lang]}</h1>
+              <div className="flex items-center gap-2 md:gap-3 mt-1 flex-wrap">
+                <span className="inline-flex items-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-full text-[11px] md:text-xs font-medium bg-teal-50 text-teal-700">
+                  {lang === 'ka' ? doctor.specialty : doctor.specialtyEn}
+                </span>
+                <StatusBadge status={doctor.status} lang={lang} />
+              </div>
+            </div>
+
+            {/* Efficiency ring — hidden on very small screens, shown inline on sm+ */}
+            <div className="hidden sm:block flex-shrink-0">
+              <div className="text-center">
+                <CircularProgress value={doctor.efficiencyScore} size={72} />
+                <div className="text-[11px] text-slate-500 mt-1 font-medium">{t('efficiency')}</div>
+              </div>
             </div>
           </div>
 
-          {/* Efficiency ring */}
-          <div className="flex-shrink-0">
-            <div className="text-center">
-              <CircularProgress value={doctor.efficiencyScore} size={72} />
-              <div className="text-[11px] text-slate-500 mt-1 font-medium">{t('efficiency')}</div>
-            </div>
+          {/* Efficiency shown below name on small screens */}
+          <div className="flex items-center gap-3 mt-3 sm:hidden">
+            <CircularProgress value={doctor.efficiencyScore} size={56} />
+            <div className="text-xs text-slate-500 font-medium">{t('efficiency')}: {doctor.efficiencyScore}%</div>
           </div>
         </div>
       </div>
 
       {/* Row 1: 4 KPI cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <KPICard
           icon={FiUsers}
           label={t('active_patients')}
@@ -212,10 +220,10 @@ export function DoctorDetailPage() {
       </div>
 
       {/* Row 2: Charts */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {/* Weekly Messages Bar Chart */}
         <ChartCard title={t('message_volume')}>
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyData} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -255,7 +263,7 @@ export function DoctorDetailPage() {
 
         {/* Monthly Revenue Area Chart */}
         <ChartCard title={t('monthly_revenue')}>
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueData} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
                 <defs>
@@ -303,9 +311,9 @@ export function DoctorDetailPage() {
       </div>
 
       {/* Row 3: Stats + Info */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {/* Left: Performance Stats */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
           <h3 className="text-base font-bold text-slate-800 mb-5">
             {lang === 'ka' ? 'შესრულების მეტრიკები' : 'Performance Metrics'}
           </h3>
@@ -340,7 +348,7 @@ export function DoctorDetailPage() {
         </div>
 
         {/* Right: Info Card */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
           <h3 className="text-base font-bold text-slate-800 mb-5">
             {lang === 'ka' ? 'ინფორმაცია' : 'Information'}
           </h3>

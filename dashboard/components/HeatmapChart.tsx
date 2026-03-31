@@ -35,16 +35,28 @@ export function HeatmapChart({ data, dayLabels, hourLabels = defaultHourLabels }
     hour: '',
     value: 0,
   });
+  const [containerWidth, setContainerWidth] = React.useState(600);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setContainerWidth(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Flatten to find min/max
   const allValues = data.flat();
   const minVal = Math.min(...allValues);
   const maxVal = Math.max(...allValues);
 
-  const cellSize = 22;
-  const cellGap = 2;
-  const labelWidth = 36;
-  const headerHeight = 28;
+  // Responsive cell sizing
+  const isMobile = containerWidth < 500;
+  const cellSize = isMobile ? 12 : 22;
+  const cellGap = isMobile ? 1 : 2;
+  const labelWidth = isMobile ? 24 : 36;
+  const headerHeight = isMobile ? 20 : 28;
 
   const totalWidth = labelWidth + hourLabels.length * (cellSize + cellGap);
   const totalHeight = headerHeight + dayLabels.length * (cellSize + cellGap);
@@ -74,7 +86,7 @@ export function HeatmapChart({ data, dayLabels, hourLabels = defaultHourLabels }
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <div className="overflow-x-auto">
         <svg
           width={totalWidth}
@@ -93,8 +105,8 @@ export function HeatmapChart({ data, dayLabels, hourLabels = defaultHourLabels }
               fontSize={9}
               fontFamily="Inter, sans-serif"
             >
-              {/* Show every other hour to avoid crowding */}
-              {i % 2 === 0 ? label : ''}
+              {/* Show every other/every 3rd hour depending on size */}
+              {(isMobile ? i % 3 === 0 : i % 2 === 0) ? label : ''}
             </text>
           ))}
 

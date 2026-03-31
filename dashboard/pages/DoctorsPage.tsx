@@ -158,13 +158,13 @@ export function DoctorsPage() {
   return (
     <div className="space-y-5">
       {/* Page title */}
-      <h1 className="text-2xl font-bold text-slate-800">{t('doctors')}</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-slate-800">{t('doctors')}</h1>
 
       {/* Filter Row */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative flex-1 min-w-0 w-full sm:w-auto">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
             <input
               type="text"
@@ -221,7 +221,7 @@ export function DoctorsPage() {
                   <th
                     key={col.key}
                     onClick={() => handleSort(col.key)}
-                    className="px-4 py-3 text-left font-semibold text-slate-600 cursor-pointer select-none hover:text-teal-700 transition-colors whitespace-nowrap"
+                    className="px-2 md:px-4 py-3 text-left font-semibold text-slate-600 cursor-pointer select-none hover:text-teal-700 transition-colors whitespace-nowrap text-xs md:text-sm"
                   >
                     <div className="flex items-center">
                       {col.label}
@@ -249,7 +249,7 @@ export function DoctorsPage() {
                       className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition-colors"
                     >
                       {/* Doctor */}
-                      <td className="px-4 py-3">
+                      <td className="px-2 md:px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div
                             className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
@@ -278,7 +278,7 @@ export function DoctorsPage() {
                       </td>
 
                       {/* Msgs/Week with trend */}
-                      <td className="px-4 py-3">
+                      <td className="px-2 md:px-4 py-3">
                         <div className="flex items-center gap-2">
                           <span className="text-slate-700 font-medium">{doc.messagesThisWeek}</span>
                           <span
@@ -293,20 +293,20 @@ export function DoctorsPage() {
                       </td>
 
                       {/* Avg Response Time */}
-                      <td className="px-4 py-3">
+                      <td className="px-2 md:px-4 py-3">
                         <span className="font-medium" style={{ color: responseTimeColor(doc.avgResponseTimeMin) }}>
                           {formatMinutes(doc.avgResponseTimeMin, lang)}
                         </span>
                       </td>
 
                       {/* Satisfaction */}
-                      <td className="px-4 py-3">
+                      <td className="px-2 md:px-4 py-3">
                         <StarRating rating={doc.satisfactionRating} />
                       </td>
 
                       {/* Efficiency */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2 min-w-[120px]">
+                      <td className="px-2 md:px-4 py-3">
+                        <div className="flex items-center gap-2 min-w-[80px] md:min-w-[120px]">
                           <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-300"

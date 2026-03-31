@@ -9,7 +9,7 @@ interface ChartCardProps {
 
 export function ChartCard({ title, subtitle, children, className = '' }: ChartCardProps) {
   return (
-    <div className={`bg-white rounded-xl shadow-sm p-5 ${className}`}>
+    <div className={`bg-white rounded-xl shadow-sm p-3 md:p-5 ${className}`}>
       <div className="mb-4">
         <h3 className="text-base font-bold text-slate-800">{title}</h3>
         {subtitle && (

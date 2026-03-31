@@ -34,22 +34,22 @@ export function AnalyticsPage() {
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <div className="text-sm text-slate-500">{lang === 'ka' ? 'სულ შეტყობინებები (4 თვე)' : 'Total Messages (4mo)'}</div>
-          <div className="text-2xl font-bold text-slate-800 mt-1">{formatNumber(totalMessages)}</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
+          <div className="text-xs md:text-sm text-slate-500">{lang === 'ka' ? 'სულ შეტყობინებები (4 თვე)' : 'Total Messages (4mo)'}</div>
+          <div className="text-xl md:text-2xl font-bold text-slate-800 mt-1">{formatNumber(totalMessages)}</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <div className="text-sm text-slate-500">{t('avg_response_time')}</div>
-          <div className="text-2xl font-bold text-slate-800 mt-1">{a.responseTimeTrend[a.responseTimeTrend.length - 1].avgMinutes} {t('min')}</div>
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
+          <div className="text-xs md:text-sm text-slate-500">{t('avg_response_time')}</div>
+          <div className="text-xl md:text-2xl font-bold text-slate-800 mt-1">{a.responseTimeTrend[a.responseTimeTrend.length - 1].avgMinutes} {t('min')}</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <div className="text-sm text-slate-500">{t('appointments')}</div>
-          <div className="text-2xl font-bold text-slate-800 mt-1">{formatNumber(a.appointmentStats.total)}</div>
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
+          <div className="text-xs md:text-sm text-slate-500">{t('appointments')}</div>
+          <div className="text-xl md:text-2xl font-bold text-slate-800 mt-1">{formatNumber(a.appointmentStats.total)}</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <div className="text-sm text-slate-500">{t('no_show')} %</div>
-          <div className="text-2xl font-bold text-red-500 mt-1">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-5">
+          <div className="text-xs md:text-sm text-slate-500">{t('no_show')} %</div>
+          <div className="text-xl md:text-2xl font-bold text-red-500 mt-1">
             {formatPercent((a.appointmentStats.noShow / a.appointmentStats.total) * 100)}
           </div>
         </div>
@@ -57,7 +57,7 @@ export function AnalyticsPage() {
 
       {/* Message Volume */}
       <ChartCard title={t('message_volume')} subtitle={lang === 'ka' ? 'ბოლო 28 დღე' : 'Last 28 days'}>
-        <div className="h-72">
+        <div className="h-48 md:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={last28Days} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
               <defs>
@@ -91,14 +91,14 @@ export function AnalyticsPage() {
       </ChartCard>
 
       {/* Heatmap + Visit Reasons */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         <ChartCard title={t('peak_hours')}>
           <HeatmapChart data={a.peakHours} dayLabels={dayLabels} />
         </ChartCard>
 
         <ChartCard title={t('visit_reasons')}>
-          <div className="flex items-center gap-6">
-            <div className="h-56 w-56 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6">
+            <div className="h-40 w-40 sm:h-56 sm:w-56 flex-shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -135,9 +135,9 @@ export function AnalyticsPage() {
       </div>
 
       {/* Response Time + Appointments */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         <ChartCard title={t('response_trend')} subtitle={`${t('target')}: 20 ${t('min')}`}>
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={a.responseTimeTrend} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -152,7 +152,7 @@ export function AnalyticsPage() {
         </ChartCard>
 
         <ChartCard title={t('appointments')} subtitle={lang === 'ka' ? 'ბოლო 4 თვე' : 'Last 4 Months'}>
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={apptData} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -167,7 +167,7 @@ export function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
           {/* Appointment summary */}
-          <div className="flex justify-between mt-4 pt-3 border-t border-slate-100 text-sm">
+          <div className="flex flex-wrap justify-between mt-4 pt-3 border-t border-slate-100 text-xs md:text-sm gap-2">
             <div className="text-slate-500">{t('completed')}: <span className="text-green-600 font-medium">{formatPercent((a.appointmentStats.completed / a.appointmentStats.total) * 100)}</span></div>
             <div className="text-slate-500">{t('no_show')}: <span className="text-red-500 font-medium">{formatPercent((a.appointmentStats.noShow / a.appointmentStats.total) * 100)}</span></div>
             <div className="text-slate-500">{t('cancelled')}: <span className="text-amber-500 font-medium">{formatPercent((a.appointmentStats.cancelled / a.appointmentStats.total) * 100)}</span></div>

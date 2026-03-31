@@ -83,22 +83,22 @@ export function FinancialPage() {
       <div className="rounded-xl shadow-sm overflow-hidden" style={{
         background: 'linear-gradient(135deg, #0f766e 0%, #0d9488 40%, #14b8a6 100%)',
       }}>
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 md:mb-6">
             <div>
               <p className="text-teal-200 text-sm font-medium mb-1">
                 {t('roi_this_month')}
               </p>
-              <div className="text-4xl font-bold text-white tracking-tight">
+              <div className="text-2xl md:text-4xl font-bold text-white tracking-tight">
                 {formatCurrency(roi.totalMonthlySavings)}
               </div>
             </div>
-            <div className="text-right">
-              <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-lg px-4 py-2">
-                <span className="text-teal-100 text-sm">{t('subscription_cost')}: {formatCurrency(roi.subscriptionCost)}{t('per_month')}</span>
-                <span className="text-white font-bold text-sm">|</span>
-                <span className="text-white font-bold text-lg">ROI: {roiMultiplier}x</span>
+            <div>
+              <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-lg px-3 md:px-4 py-2 text-xs md:text-sm">
+                <span className="text-teal-100">{t('subscription_cost')}: {formatCurrency(roi.subscriptionCost)}{t('per_month')}</span>
+                <span className="text-white font-bold">|</span>
+                <span className="text-white font-bold text-base md:text-lg">ROI: {roiMultiplier}x</span>
               </div>
             </div>
           </div>
@@ -131,13 +131,13 @@ export function FinancialPage() {
       </div>
 
       {/* Row 2: Projected vs Actual + After-Hours Revenue */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
         {/* Projected vs Actual */}
         <ChartCard
           title={t('projected_vs_actual')}
           subtitle={lang === 'ka' ? 'ბოლო 4 თვე' : 'Last 4 months'}
         >
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={projActualData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -195,9 +195,9 @@ export function FinancialPage() {
           title={t('after_hours_detail')}
           subtitle={`${lang === 'ka' ? 'სულ' : 'Total'}: ${formatCurrency(afterHoursBreakdown.totalEarnings)}`}
         >
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
             {/* Donut chart */}
-            <div className="w-40 h-40 flex-shrink-0">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -290,12 +290,12 @@ export function FinancialPage() {
         title={t('revenue_per_doctor')}
         subtitle={lang === 'ka' ? 'ტოპ 15 ექიმი არასამუშაო შემოსავლით' : 'Top 15 doctors by after-hours revenue'}
       >
-        <div style={{ height: Math.max(400, doctorRevenueData.length * 32) }}>
+        <div className="overflow-x-auto" style={{ height: Math.max(350, doctorRevenueData.length * 32) }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={doctorRevenueData}
               layout="vertical"
-              margin={{ top: 5, right: 60, bottom: 5, left: 10 }}
+              margin={{ top: 5, right: 50, bottom: 5, left: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
               <XAxis
@@ -311,7 +311,7 @@ export function FinancialPage() {
                 tick={{ fontSize: 11, fill: '#64748b' }}
                 tickLine={false}
                 axisLine={false}
-                width={150}
+                width={120}
               />
               <Tooltip
                 contentStyle={{
@@ -343,7 +343,7 @@ export function FinancialPage() {
       </ChartCard>
 
       {/* Row 4: 4 small KPI cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <KPICard
           icon={FiTrendingUp}
           label={t('total_revenue')}

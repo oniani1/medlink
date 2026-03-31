@@ -7,6 +7,7 @@ import { DoctorDetailPage } from './pages/DoctorDetailPage';
 import { PatientsPage } from './pages/PatientsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { FinancialPage } from './pages/FinancialPage';
+import { PrescriptionsPage } from './pages/PrescriptionsPage';
 
 export function DashboardApp() {
   return (
@@ -17,6 +18,7 @@ export function DashboardApp() {
         <Route path="doctors/:id" element={<DoctorDetailPage />} />
         <Route path="patients" element={<PatientsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="prescriptions" element={<PrescriptionsPage />} />
         <Route path="financial" element={<FinancialPage />} />
       </Route>
     </Routes>

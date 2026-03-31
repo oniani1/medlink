@@ -16,7 +16,7 @@ export function KPICard({ icon: Icon, label, value, trend, sparkData, color = '#
   const sparkChartData = sparkData?.map((v, i) => ({ v, i }));
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm p-3 md:p-5 hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           {/* Icon + label row */}
@@ -27,11 +27,11 @@ export function KPICard({ icon: Icon, label, value, trend, sparkData, color = '#
             >
               <Icon className="text-lg" style={{ color }} />
             </div>
-            <span className="text-sm text-slate-500 font-medium leading-tight">{label}</span>
+            <span className="text-xs md:text-sm text-slate-500 font-medium leading-tight">{label}</span>
           </div>
 
           {/* Value */}
-          <div className="text-2xl font-bold text-slate-800 tracking-tight">{value}</div>
+          <div className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">{value}</div>
 
           {/* Trend badge */}
           {trend && (
@@ -56,7 +56,7 @@ export function KPICard({ icon: Icon, label, value, trend, sparkData, color = '#
 
         {/* Sparkline */}
         {sparkChartData && sparkChartData.length > 1 && (
-          <div className="w-24 h-12 flex-shrink-0 ml-3 mt-1">
+          <div className="w-16 md:w-24 h-10 md:h-12 flex-shrink-0 ml-2 md:ml-3 mt-1 hidden sm:block">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={sparkChartData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <defs>

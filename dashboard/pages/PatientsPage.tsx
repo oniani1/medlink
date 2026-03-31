@@ -47,7 +47,7 @@ export function PatientsPage() {
   return (
     <div className="space-y-6">
       {/* KPI Row */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <KPICard
           icon={FiUsers}
           label={t('total_patients')}
@@ -82,10 +82,10 @@ export function PatientsPage() {
       </ChartCard>
 
       {/* Demographics + Anamnesis */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {/* Age Groups */}
         <ChartCard title={t('age_groups')}>
-          <div className="h-64">
+          <div className="h-48 md:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ps.demographics.ageGroups} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -163,9 +163,9 @@ export function PatientsPage() {
       </div>
 
       {/* Satisfaction + New Patients Trend */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <ChartCard title={t('satisfaction_dist')}>
-          <div className="h-56">
+          <div className="h-48 md:h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={satisfactionData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -181,7 +181,7 @@ export function PatientsPage() {
         </ChartCard>
 
         <ChartCard title={t('new_patients')} subtitle={lang === 'ka' ? 'ბოლო 4 თვე' : 'Last 4 Months'}>
-          <div className="h-56">
+          <div className="h-48 md:h-56">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={ps.monthlyNewPatients} margin={{ top: 5, right: 20, bottom: 5, left: 5 }}>
                 <defs>

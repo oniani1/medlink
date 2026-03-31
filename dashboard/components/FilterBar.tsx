@@ -33,7 +33,7 @@ export function FilterBar({ filters, searchValue, onSearchChange, searchPlacehol
             value={searchValue ?? ''}
             onChange={e => onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            className="pl-9 pr-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-colors w-56"
+            className="pl-9 pr-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-colors w-full sm:w-56"
           />
         </div>
       )}
